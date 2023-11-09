@@ -34,13 +34,13 @@ exports.sendOTP = async (req, res) => {
   const clientIp = requestIp.getClientIp(req);
 
   // Send OTP via SMS (use your SMS service integration here)
-  // client.messages
-  //   .create({
-  //     body: `Your GameX OTP is ${otp}. Please do not share it with anyone. It is valid for 5 minutes.`,
-  //     from: process.env.PHONE_NUMBER,
-  //     to: phoneNumber,
-  //   })
-  //   .then((message) => console.log(message.sid));
+  client.messages
+    .create({
+      body: `Your GameX OTP is ${otp}. Please do not share it with anyone. It is valid for 5 minutes.`,
+      from: process.env.PHONE_NUMBER,
+      to: phoneNumber,
+    })
+    .then((message) => console.log(message.sid));
   const referrerCode = await generateReferrerCode();
 
   const user = await AdminModel.findOne({ phoneNumber: phoneNumber });
