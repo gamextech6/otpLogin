@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 
 const bankDetailsSchema = new mongoose.Schema({
+  branchName: String,
+	bankName: String,
   bankHolder: String,
   account_No: String,
   ifsc_code: String,

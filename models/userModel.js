@@ -8,8 +8,12 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum : ["admin", "agent" , "user"],
+    enum: ["admin", "agent", "user"],
     default: "user",
+  },
+  balance: {
+    type: Number,
+    default: 0,
   },
   point: Number,
   ip: String,
