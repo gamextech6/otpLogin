@@ -245,7 +245,7 @@ exports.adminDeductMoneyFromUser = async (req, res) => {
           });
           await transaction.save();
 
-          res.json({ message: "Money deducted successfully", balance: user.balance });
+          res.json({ message: "Money deducted successfully", balance: user.point });
       } else {
           res.status(400).json({ message: "Insufficient funds in the wallet" });
       }
