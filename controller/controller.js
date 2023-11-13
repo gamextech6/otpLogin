@@ -45,11 +45,14 @@ exports.sendOTP = async (req, res) => {
   const user = await UserModel.findOne({ phoneNumber: phoneNumber });
 
   if (!user) {
-      res.json.status(false)({message: "User Not Found. Please resister first."});
+     const newUser = new UserModel ({
+      phoneNumber : phoneNumber,
+      otp : otp
+     })
+     newUser.save()
+      // res.json.status(false)({message: "User Not Found. Please resister first."});
     } else {
     user.otp = otp;
-    user.ip = clientIp;
-    user.os = os;
     user
       .save()
       .then((savedOTP) => {
@@ -79,14 +82,9 @@ exports.verifyOTP = async (req, res) => {
         sucess: true,
         message: "Logged in successfully",
         role: otpDocument.role,
-        // user: {
-        //   name: user.name,
-        //   email: user.email,
-        //   usertype: user.usertype
-        // },
         token,
       });
-      // res.json({ message: 'Logged in successfully' });
+     
       otpDocument.otp = "";
       otpDocument.save();
     } else {
