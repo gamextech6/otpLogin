@@ -31,7 +31,7 @@ exports.sendOTP = async (req, res) => {
   const phoneNumber = req.body.phoneNumber;
   const otp = Math.floor(1000 + Math.random() * 9000);
   console.log(otp);
-  const clientIp = requestIp.getClientIp(req);
+
 
   // Send OTP via SMS (use your SMS service integration here)
   client.messages
@@ -41,28 +41,11 @@ exports.sendOTP = async (req, res) => {
       to: phoneNumber,
     })
     .then((message) => console.log(message.sid));
-  const referrerCode = await generateReferrerCode();
 
   const user = await UserModel.findOne({ phoneNumber: phoneNumber });
 
   if (!user) {
-      const newUser = new UserModel({
-        otp: otp,
-        phoneNumber: phoneNumber,
-        point: 10,
-        ip: clientIp,
-        os: os,
-        role: "user",
-        referrerCode: referrerCode,
-      });
-      newUser
-        .save()
-        .then((savedOTP) => {
-          console.log("OTP saved:", savedOTP);
-        })
-        .catch((error) => {
-          console.error("Error saving OTP:", error);
-        });
+      res.json.status(false)({message: "User Not Found. Please resister first."});
     } else {
     user.otp = otp;
     user.ip = clientIp;
@@ -92,7 +75,7 @@ exports.verifyOTP = async (req, res) => {
     if (userEnteredOTP === storedOTP) {
       const token = createJwtToken({ phoneNumber: otpDocument.phoneNumber });
       console.log(token);
-      res.status(201).send({
+      res.status(200).send({
         sucess: true,
         message: "Logged in successfully",
         role: otpDocument.role,
@@ -118,12 +101,17 @@ exports.verifyOTP = async (req, res) => {
 exports.registerUser = async (req, res) => {
   try {
     const { userName, password, phoneNo, otp } = req.body;
+    const referrerCode = await generateReferrerCode();
+    const clientIp = requestIp.getClientIp(req);
 
     const newUser = new UserModel({
       userName,
       password,
       phoneNo,
       otp,
+      ip: clientIp,
+      os: os,
+      referrerCode: referrerCode,
     });
 
     // Save user to the database
