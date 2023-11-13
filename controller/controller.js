@@ -114,6 +114,69 @@ exports.verifyOTP = async (req, res) => {
   }
 };
 
+
+exports.registerUser = async (req, res) => {
+  try {
+    const { userName, password, phoneNo, otp } = req.body;
+
+    const newUser = new UserModel({
+      userName,
+      password,
+      phoneNo,
+      otp,
+    });
+
+    // Save user to the database
+    await newUser.save();
+
+    res.json({ message: 'User registered successfully.' });
+  } catch (error) {
+    console.error('Error registering user:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
+exports.loginUser = async (req, res) => {
+  try {
+    const { userName, password } = req.body;
+
+    // Check if the user exists
+    const user = await UserModel.findOne({ userName, password });
+
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    res.json({ message: 'Login successful' });
+  } catch (error) {
+    console.error('Error logging in:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { phoneNo, newPassword } = req.body;
+
+    // Check if the user exists
+    const user = await UserModel.findOne({ phoneNo});
+
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid OTP' });
+    }
+
+    // Update user's password in the database
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ message: 'Password reset successfully' });
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 exports.registerWithReferral = async (req, res) => {
   const { phoneNumber, referralCode } = req.body;
   //Check that is user alrady exist of not 
@@ -146,3 +209,5 @@ exports.registerWithReferral = async (req, res) => {
   }
   res.json
 };
+
+
