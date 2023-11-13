@@ -100,14 +100,14 @@ exports.verifyOTP = async (req, res) => {
 
 exports.registerUser = async (req, res) => {
   try {
-    const { userName, password, phoneNo, otp } = req.body;
+    const { userName, password, phoneNumber, otp } = req.body;
     const referrerCode = await generateReferrerCode();
     const clientIp = requestIp.getClientIp(req);
 
     const newUser = new UserModel({
       userName,
       password,
-      phoneNo,
+      phoneNumber,
       otp,
       ip: clientIp,
       os: os,
@@ -145,13 +145,13 @@ exports.loginUser = async (req, res) => {
 
 exports.resetPassword = async (req, res) => {
   try {
-    const { phoneNo, newPassword } = req.body;
+    const { phoneNumber, newPassword } = req.body;
 
     // Check if the user exists
-    const user = await UserModel.findOne({ phoneNo});
+    const user = await UserModel.findOne({ phoneNumber: phoneNumber });
 
     if (!user) {
-      return res.status(401).json({ message: 'Invalid OTP' });
+      return res.status(401).json({ message: 'User Not Found' });
     }
 
     // Update user's password in the database
