@@ -62,8 +62,10 @@ exports.sendOTP = async (req, res) => {
         console.error("Error saving OTP:", error);
       });
   }
-
-  res.json({ message: "OTP sent successfully" });
+  res.status(200).send({
+    sucess: true,
+    message: "OTP sent successfully",
+  });  
 };
 
 exports.verifyOTP = async (req, res) => {
@@ -80,11 +82,8 @@ exports.verifyOTP = async (req, res) => {
       console.log(token);
       res.status(200).send({
         sucess: true,
-        message: "Logged in successfully",
-        role: otpDocument.role,
-        token,
-      });
-     
+        message: "Verified successfully",
+      });     
       otpDocument.otp = "";
       otpDocument.save();
     } else {
@@ -98,24 +97,32 @@ exports.verifyOTP = async (req, res) => {
 
 exports.registerUser = async (req, res) => {
   try {
-    const { userName, password, phoneNumber, otp } = req.body;
+    const { userName, password, phoneNumber } = req.body;
+    const user = await UserModel.findOne({ phoneNumber });
     const referrerCode = await generateReferrerCode();
     const clientIp = requestIp.getClientIp(req);
 
-    const newUser = new UserModel({
-      userName,
-      password,
-      phoneNumber,
-      otp,
-      ip: clientIp,
-      os: os,
-      referrerCode: referrerCode,
-    });
+    const updatedUser = await UserModel.findOneAndUpdate(
+      { phoneNumber: phoneNumber },
+      {
+        $set: {
+          userName,
+          password,
+          ip: clientIp,
+          os: os,
+          referrerCode: referrerCode,
+        },
+      },
+      { upsert: true, new: true }
+    );
 
     // Save user to the database
-    await newUser.save();
+    await updatedUser.save();
 
-    res.json({ message: 'User registered successfully.' });
+    res.status(200).send({
+      sucess: true,
+      message: "User registered successfully.",
+    });  
   } catch (error) {
     console.error('Error registering user:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -133,8 +140,10 @@ exports.loginUser = async (req, res) => {
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-
-    res.json({ message: 'Login successful' });
+    res.status(200).send({
+      sucess: true,
+      message: "Login successful",
+    }); 
   } catch (error) {
     console.error('Error logging in:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -155,8 +164,10 @@ exports.resetPassword = async (req, res) => {
     // Update user's password in the database
     user.password = newPassword;
     await user.save();
-
-    res.json({ message: 'Password reset successfully' });
+    res.status(200).send({
+      sucess: true,
+      message: "Password reset successfully",
+    }); 
   } catch (error) {
     console.error('Error resetting password:', error);
     res.status(500).json({ error: 'Internal server error' });
