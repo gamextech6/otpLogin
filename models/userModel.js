@@ -6,15 +6,25 @@ const userSchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
-  userName: { 
-    type: String, 
-    unique: true },
-  password: { 
-    type: String },
+  userName: {
+    type: String,
+    unique: true
+  },
+  password: {
+    type: String
+  },
+  phoneNumber: String,
+  firstName: String,
+  lastName: String,
+  gender: String,
+  dob: String,
   role: {
     type: String,
     enum: ["admin", "agent", "user"],
     default: "user",
+  },
+  referral: {
+    type: String,
   },
   balance: {
     type: Number,

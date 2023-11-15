@@ -16,7 +16,7 @@ const generateReferrerCode = async () => {
   while (!isUnique) {
     // Generate a random 6-character code (you can adjust the length)
     code = Math.random().toString(36).slice(2, 8).toUpperCase();
-    
+
     // Check if the code is unique
     const existingUser = await (UserModel.findOne({ referrerCode: code }) || AdminModel.findOne({ referrerCode: code }));
     if (!existingUser) {
@@ -45,13 +45,13 @@ exports.sendOTP = async (req, res) => {
   const user = await UserModel.findOne({ phoneNumber: phoneNumber });
 
   if (!user) {
-     const newUser = new UserModel ({
-      phoneNumber : phoneNumber,
-      otp : otp
-     })
-     newUser.save()
-      // res.json.status(false)({message: "User Not Found. Please resister first."});
-    } else {
+    const newUser = new UserModel({
+      phoneNumber: phoneNumber,
+      otp: otp
+    })
+    newUser.save()
+    // res.json.status(false)({message: "User Not Found. Please resister first."});
+  } else {
     user.otp = otp;
     user
       .save()
@@ -65,14 +65,14 @@ exports.sendOTP = async (req, res) => {
   res.status(200).send({
     sucess: true,
     message: "OTP sent successfully",
-  });  
+  });
 };
 
 exports.verifyOTP = async (req, res) => {
   const phoneNumber = req.body.phoneNumber;
   const userEnteredOTP = req.body.otp;
 
-  const otpDocument = await UserModel.findOne({ phoneNumber: phoneNumber }) ;
+  const otpDocument = await UserModel.findOne({ phoneNumber: phoneNumber });
 
   if (otpDocument) {
     const storedOTP = otpDocument.otp;
@@ -83,7 +83,7 @@ exports.verifyOTP = async (req, res) => {
       res.status(200).send({
         sucess: true,
         message: "Verified successfully",
-      });     
+      });
       otpDocument.otp = "";
       otpDocument.save();
     } else {
@@ -94,20 +94,19 @@ exports.verifyOTP = async (req, res) => {
   }
 };
 
-
 exports.registerUser = async (req, res) => {
   try {
-    const { userName, password, phoneNumber } = req.body;
+    const { userName, password, phoneNumber, referral } = req.body;
     const user = await UserModel.findOne({ phoneNumber });
     const referrerCode = await generateReferrerCode();
     const clientIp = requestIp.getClientIp(req);
-
     const updatedUser = await UserModel.findOneAndUpdate(
       { phoneNumber: phoneNumber },
       {
         $set: {
           userName,
           password,
+          referral,
           ip: clientIp,
           os: os,
           referrerCode: referrerCode,
@@ -115,20 +114,27 @@ exports.registerUser = async (req, res) => {
       },
       { upsert: true, new: true }
     );
-
     // Save user to the database
     await updatedUser.save();
-
+    if (referral) {
+      const referrerUser = await UserModel.findOne({ referrerCode: referral });
+      if (referrerUser) {
+        // Add balance to the referrer's account
+        referrerUser.balance += 50;
+        updatedUser.balance += 50;// Adjust the amount as needed
+        await referrerUser.save();
+        await updatedUser.save();
+      }
+    }
     res.status(200).send({
       sucess: true,
       message: "User registered successfully.",
-    });  
+    });
   } catch (error) {
     console.error('Error registering user:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
-
 
 exports.loginUser = async (req, res) => {
   try {
@@ -140,10 +146,15 @@ exports.loginUser = async (req, res) => {
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
+    const userData = {
+      userName: user.userName,
+      phoneNumber: user.phoneNumber,
+    };
     res.status(200).send({
       sucess: true,
       message: "Login successful",
-    }); 
+      userData
+    });
   } catch (error) {
     console.error('Error logging in:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -167,9 +178,127 @@ exports.resetPassword = async (req, res) => {
     res.status(200).send({
       sucess: true,
       message: "Password reset successfully",
-    }); 
+    });
   } catch (error) {
     console.error('Error resetting password:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.updateUserProfile = async (req, res) => {
+  const phoneNumber = req.params.phoneNumber;
+  const { firstName, lastName, gender, dob } = req.body;
+
+  try {
+    // Search for the user with the provided phone number
+    const user = await UserModel.findOne({ phoneNumber });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update user profile information
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.gender = gender;
+    user.dob = dob;
+
+    // Save the updated user profile
+    await user.save();
+    res.status(200).send({
+      sucess: true,
+      message: "User profile updated successfully",
+    });
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.getUserProfile = async (req, res) => {
+  const phoneNumber = req.params.phoneNumber;
+
+  try {
+    // Search for the user with the provided phone number
+    const user = await UserModel.findOne({ phoneNumber });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Return user profile information
+    const userProfile = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      gender: user.gender,
+      dob: user.dob,
+    };
+    res.status(200).send({
+      sucess: true,
+      message: "User profile got successfully",
+      userProfile
+    });
+
+    // res.json(userProfile);
+  } catch (error) {
+    console.error('Error retrieving user profile:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.getUserBalance = async (req, res) => {
+  const phoneNumber = req.params.phoneNumber;
+
+  try {
+    // Search for the user with the provided phone number
+    const user = await UserModel.findOne({ phoneNumber });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Return user profile information
+    const userBalance = {
+      balance: user.balance,
+    };
+
+    res.status(200).send({
+      sucess: true,
+      message: "User ballance got successfully",
+      userBalance
+    });
+
+    // res.json(userBalance);
+  } catch (error) {
+    console.error('Error retrieving user profile:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.getUserReferralCode = async (req, res) => {
+  const phoneNumber = req.params.phoneNumber;
+
+  try {
+    // Search for the user with the provided phone number
+    const user = await UserModel.findOne({ phoneNumber });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Return user profile information
+    const userRefferal = {
+      referrerCode: user.referrerCode,
+    };
+    res.status(200).send({
+      sucess: true,
+      message: "User referral got successfully",
+      userRefferal
+    });
+
+    // res.json(userBalance);
+  } catch (error) {
+    console.error('Error retrieving user profile:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -184,8 +313,8 @@ exports.registerWithReferral = async (req, res) => {
       const referrer = await UserModel.findOne({ referrerCode: referralCode });
       if (!referrer) {
         return res.status(400).json({ message: "Referral code not found." });
-      } 
-      
+      }
+
       const newUser = new UserModel({
         otp: otp,
         phoneNumber: phoneNumber,
@@ -206,5 +335,3 @@ exports.registerWithReferral = async (req, res) => {
   }
   res.json
 };
-
-
