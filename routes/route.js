@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 
-const { sendOTP, verifyOTP, registerUser, loginUser, resetPassword, updateUserProfile, getUserProfile, getUserBalance, getUserReferralCode } = require("../controller/controller");
+const { sendOTP, sendForgetOTP, verifyOTP, registerUser, loginUser, resetPassword, updateUserProfile, getUserProfile, getUserBalance, getUserReferralCode,  } = require("../controller/controller");
 
 router.post("/send-otp", sendOTP);
+router.post("/send-forgetotp", sendForgetOTP);
 router.post("/verify-otp", verifyOTP);
 router.post("/register-user", registerUser);
 router.post("/login-user", loginUser);

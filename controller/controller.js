@@ -31,18 +31,23 @@ exports.sendOTP = async (req, res) => {
   const phoneNumber = req.body.phoneNumber;
   const otp = Math.floor(1000 + Math.random() * 9000);
   console.log(otp);
-
-
-  // Send OTP via SMS (use your SMS service integration here)
-  client.messages
-    .create({
-      body: `Your GameX OTP is ${otp}. Please do not share it with anyone. It is valid for 5 minutes.`,
-      from: process.env.PHONE_NUMBER,
-      to: phoneNumber,
-    })
-    .then((message) => console.log(message.sid));
+  
+  const admin = await AdminModel.findOne({phoneNumber: phoneNumber});
+  if(admin){
+    return res.status(200).send({
+      sucess: true,
+      message: "You are Admin",
+    });
+   }
 
   const user = await UserModel.findOne({ phoneNumber: phoneNumber });
+  client.messages
+  .create({
+    body: `Your GameX OTP is ${otp}. Please do not share it with anyone. It is valid for 5 minutes.`,
+    from: process.env.PHONE_NUMBER,
+    to: phoneNumber,
+  })
+  .then((message) => console.log(message.sid));
 
   if (!user) {
     const newUser = new UserModel({
@@ -66,6 +71,47 @@ exports.sendOTP = async (req, res) => {
     sucess: true,
     message: "OTP sent successfully",
   });
+};
+
+exports.sendForgetOTP = async (req, res) => {
+  const phoneNumber = req.body.phoneNumber;
+  const otp = Math.floor(1000 + Math.random() * 9000);
+  console.log(otp);
+
+  const user = await UserModel.findOne({ phoneNumber: phoneNumber });
+  // Send OTP via SMS (use your SMS service integration here)
+   if(!user){
+    return res.status(200).send({
+      sucess: true,
+      message: "User Not Found",
+    });
+   }
+
+  if (user) {
+    client.messages
+    .create({
+      body: `Your GameX OTP is ${otp}. Please do not share it with anyone. It is valid for 5 minutes.`,
+      from: process.env.PHONE_NUMBER,
+      to: phoneNumber,
+    })
+    .then((message) => console.log(message.sid));
+
+    user.otp = otp;
+    user
+      .save()
+      .then((savedOTP) => {
+        console.log("OTP saved:", savedOTP);
+      })
+      .catch((error) => {
+        console.error("Error saving OTP:", error);
+      });
+      res.status(200).send({
+        sucess: true,
+        message: "OTP sent successfully",
+      });
+    // res.json.status(false)({message: "User Not Found. Please resister first."});
+  }
+
 };
 
 exports.verifyOTP = async (req, res) => {
