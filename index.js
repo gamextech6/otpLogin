@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv').config();
+const cors = require('cors');
 const mongoose = require('mongoose');
 const router = express.Router();
 const port = process.env.PORT || 3000;
@@ -15,6 +16,7 @@ const UserModel = require('./models/userModel');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cors());
 
 mongoose.connect(process.env.MONGOOSE_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB Successfully Connected'))

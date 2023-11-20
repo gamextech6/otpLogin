@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
   otp: String,
-  phoneNumber: {
-    type: String,
-    unique: true,
-  },
+  // phoneNumber: {
+  //   type: String,
+  //   unique: true,
+  // },
   userName: {
     type: String,
     unique: true
@@ -38,6 +38,10 @@ const userSchema = new mongoose.Schema({
     unique: true,
   },
   referredCode: String,
+  blocked: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const UserModel = mongoose.model('User', userSchema);

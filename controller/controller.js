@@ -146,6 +146,10 @@ exports.registerUser = async (req, res) => {
     const user = await UserModel.findOne({ phoneNumber });
     const referrerCode = await generateReferrerCode();
     const clientIp = requestIp.getClientIp(req);
+    const blockedUser = await UserModel.findOne({ phoneNumber, blocked: true });
+    if (blockedUser) {
+      return res.status(403).json({ error: 'User is blocked. Cannot register.' });
+    }
     const updatedUser = await UserModel.findOneAndUpdate(
       { phoneNumber: phoneNumber },
       {
@@ -182,11 +186,50 @@ exports.registerUser = async (req, res) => {
   }
 };
 
+exports.getAllUsers = async (req, res) => {
+  try {
+    // Fetch all users from the database
+    const allUsers = await UserModel.find();
+
+    // Return the user data as JSON
+    res.status(200).json({ success: true, data: allUsers });
+  } catch (error) {
+    console.error('Error getting all users:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.blockUser = async (req, res) => {
+  try {
+    const { phoneNumber, blocked } = req.body;
+
+    // Update the user's blocked status
+    const user = await UserModel.findOneAndUpdate(
+      { phoneNumber },
+      { $set: { blocked } },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    res.status(200).json({ success: true, blocked: user.blocked });
+  } catch (error) {
+    console.error('Error blocking/unblocking user:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 exports.loginUser = async (req, res) => {
   try {
     const { userName, password } = req.body;
 
     // Check if the user exists
+    const blockedUser = await UserModel.findOne({ userName, blocked: true });
+    if (blockedUser) {
+      return res.status(403).json({ error: 'User is blocked. Cannot log in.' });
+    }
     const user = await UserModel.findOne({ userName, password });
 
     if (!user) {
@@ -317,6 +360,27 @@ exports.getUserBalance = async (req, res) => {
     // res.json(userBalance);
   } catch (error) {
     console.error('Error retrieving user profile:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.searchUserByUsername = async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    // Use a regular expression for a case-insensitive search
+    const regex = new RegExp(username, 'i');
+
+    // Search for users with a matching username
+    const user = await UserModel.find({ userName: regex });
+    res.status(200).send({
+      sucess: true,
+      message: "User ballance got successfully",
+      data: user
+    });
+    // res.json({ users });
+  } catch (error) {
+    console.error('Error searching for users:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
