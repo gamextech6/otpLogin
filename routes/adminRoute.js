@@ -1,17 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const { sendOTP, verifyOTP, addAgent, deleteAgent, deleteUser, adminDeductMoneyFromUser, adminAddMoneyToUser, addBankDetails, deleteBankDetail, adminLogin } = require("../controller/adminController");
+const {adminLogin, createAdminAgent, getAdminAgentDetails, blockAdminAgent, unblockAdminAgent, getAllAdminAgents  } = require("../controller/adminController");
 
 
 router.post("/admin-login", adminLogin);
-router.post("/send-otp", sendOTP);
-router.post("/verify-otp", verifyOTP);
-router.post("/add-agent", addAgent);
-router.post("/delete-agent", deleteAgent);
-router.post("/deduct-money", adminDeductMoneyFromUser);
-router.post("/add-money", adminAddMoneyToUser);
-router.post("/delete-user", deleteUser);
-router.post("/add-bankaccount", addBankDetails);
-router.post("/delete-bankaccount", deleteBankDetail);
+router.post("/admin-agent", createAdminAgent);
+router.get("/all-admin-agent", getAllAdminAgents);
+router.get("/admin-agent/:username", getAdminAgentDetails);
+router.put("/admin-agent/block/:username", blockAdminAgent);
+router.put("/admin-agent/unblock/:username", unblockAdminAgent);
 
 module.exports = router;
