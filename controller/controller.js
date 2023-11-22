@@ -221,6 +221,28 @@ exports.blockUser = async (req, res) => {
   }
 };
 
+exports.unblockUser = async (req, res) => {
+  try {
+    const { phoneNumber, blocked } = req.body;
+
+    // Update the user's blocked status
+    const user = await UserModel.findOneAndUpdate(
+      { phoneNumber },
+      { $set: { blocked: false  } },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    res.status(200).json({ success: true, unblocked: user.blocked });
+  } catch (error) {
+    console.error('Error blocking/unblocking user:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 exports.loginUser = async (req, res) => {
   try {
     const { userName, password } = req.body;

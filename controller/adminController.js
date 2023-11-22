@@ -11,6 +11,7 @@ const client = new twilio(
 );
 const os = require("os").platform();
 
+
 const generateReferrerCode = async () => {
   let code;
   let isUnique = false;
@@ -27,6 +28,26 @@ const generateReferrerCode = async () => {
   }
 
   return code;
+};
+
+exports.adminLogin = async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    // Find the admin by username
+    const admin = await AdminModel.findOne({ username, password });
+
+    if (!admin) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    res.status(200).send({
+      sucess: true,
+      message: "Login successful"
+    });
+  } catch (error) {
+    console.error('Error during admin login:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
 exports.sendOTP = async (req, res) => {

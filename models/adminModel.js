@@ -1,20 +1,14 @@
 const mongoose = require('mongoose');
 
 const adminSchema = new mongoose.Schema({
-  otp: String,
-  phoneNumber: {
+  username: {
     type: String,
+    required: true,
     unique: true,
   },
-  role: {
+  password: {
     type: String,
-    default: 'admin'
-  },
-  ip: String,
-  os: String,
-  referrerCode: {
-    type: String,
-    unique: true,
+    required: true,
   },
 });
 
