@@ -6,8 +6,8 @@ const {adminLogin, createAdminAgent, getAdminAgentDetails, blockAdminAgent, unbl
 router.post("/admin-login", adminLogin);
 router.post("/admin-agent", createAdminAgent);
 router.get("/all-admin-agent", getAllAdminAgents);
-router.get("/admin-agent/:username", getAdminAgentDetails);
-router.put("/admin-agent/block/:username", blockAdminAgent);
-router.put("/admin-agent/unblock/:username", unblockAdminAgent);
+router.get("/admin-agent/:userName", getAdminAgentDetails);
+router.put("/admin-agent/block/:userName", blockAdminAgent);
+router.put("/admin-agent/unblock/:userName", unblockAdminAgent);
 
 module.exports = router;

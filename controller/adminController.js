@@ -53,13 +53,9 @@ exports.createAdminAgent = async (req, res) => {
   try {
     const { userName, firstName, lastName, phoneNo, password } = req.body;
 
-    // Validate input fields (you may want to add more validation logic)
-    if (!userName || !firstName || !lastName || !phoneNo || !password) {
-      return res.status(400).json({ error: 'All fields are required.' });
-    }
-
     // Check if the username is already taken
     const existingUser = await AdminAgentModel.findOne({ userName });
+
     if (existingUser) {
       return res.status(400).json({ error: 'Username is already taken.' });
     }
@@ -76,12 +72,13 @@ exports.createAdminAgent = async (req, res) => {
     // Save to the database
     await newAdminAgent.save();
 
-    res.status(200).json({ success: true, message: 'Admin agent created successfully.' });
+    return res.status(200).json({ success: true, message: 'Admin agent created successfully.' });
   } catch (error) {
     console.error('Error creating admin agent:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
 
 exports.getAllAdminAgents = async (req, res) => {
   try {
@@ -100,7 +97,7 @@ exports.getAdminAgentDetails = async (req, res) => {
     const { userName } = req.params;
 
     // Find the admin agent by username
-    const adminAgent = await AdminAgentModel.findOne({ userName });
+    const adminAgent = await AdminAgentModel.findOne({userName });
 
     // Check if the admin agent exists
     if (!adminAgent) {
@@ -108,7 +105,11 @@ exports.getAdminAgentDetails = async (req, res) => {
     }
 
     // Return the admin agent details
-    res.status(200).json({ success: true, adminAgent });
+    res.status(200).send({
+      sucess: true,
+      message: "Agent got successfully",
+      data: adminAgent
+    });
   } catch (error) {
     console.error('Error getting admin agent details:', error);
     res.status(500).json({ error: 'Internal server error' });
