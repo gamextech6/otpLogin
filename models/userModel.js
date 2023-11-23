@@ -37,11 +37,20 @@ const userSchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
-  referredCode: String,
   blocked: {
     type: Boolean,
     default: false,
+  }, 
+  bankName : String,
+  branchName : String,
+  accountHolderName: String, 
+  bankAccountNumber: {
+    type: String,
+    unique: true,
   },
+  ifscCode: String,
+  aadhar: String,
+  pan: String,
 });
 
 const UserModel = mongoose.model('User', userSchema);

@@ -8,7 +8,7 @@
     "build": "npm install && npm run build-server",
     "build-server": "echo 'Building server...' && npm run compile-server",
     "compile-server": "echo 'Compiling server...'",
-    "deep":"npx functions-framework --target=deep"
+    "deep": "npx functions-framework --target=deep"
   },
   "engines": {
     "node": ">=18.18.0 <19.0.0"
@@ -18,6 +18,7 @@
   "keywords": [],
   "description": "",
   "dependencies": {
+    "aws-sdk": "^2.1501.0",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -27,6 +28,7 @@
     "firebase-functions": "^4.4.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.6.3",
+    "multer": "^1.4.5-lts.1",
     "nodemon": "^3.0.1",
     "request-ip": "^3.3.0",
     "twilio": "^4.19.0"

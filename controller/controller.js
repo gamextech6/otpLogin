@@ -3,10 +3,17 @@ const AdminModel = require("../models/adminModel");
 const { createJwtToken } = require("../util/tokenUtil");
 const requestIp = require("request-ip");
 const twilio = require("twilio");
+const AWS = require('aws-sdk');
 const client = new twilio(
   process.env.TWILIO_ACCOUNT_SID,
   process.env.TWILIO_AUTH_TOKEN
 );
+const s3 = new AWS.S3({
+  accessKeyId: process.env.ACCESS_KEY_Id,
+  secretAccessKey: process.env.SECRET_ACCESS_KEY,
+  region: process.env.REGION,
+});
+
 const os = require("os").platform();
 
 const generateReferrerCode = async () => {
@@ -466,4 +473,76 @@ exports.registerWithReferral = async (req, res) => {
     }
   }
   res.json
+};
+
+exports.userAccountAdd = async (req, res) => {
+  try {
+    const { bankName, branchName, accountHolderName, bankAccountNumber, ifscCode } = req.body;
+    const phoneNumber = req.params.phoneNumber;
+
+    const blockedUser = await UserModel.findOne({ phoneNumber, blocked: true });
+    if (blockedUser) {
+      return res.status(403).json({ error: 'User is blocked. Cannot able to upload bank details. Please connect to support team.' });
+    }
+
+    const user = await UserModel.findOne({ phoneNumber: phoneNumber });
+    user.bankName = bankName
+    user.branchName = branchName
+    user.accountHolderName = accountHolderName
+    user.bankAccountNumber = bankAccountNumber
+    user.ifscCode = ifscCode
+    // Save user to the database
+    await user.save();
+    res.status(200).send({
+      sucess: true,
+      message: "User account Details submitted successfully.",
+    });
+  } catch (error) {
+    console.error('Error on subbmitting :', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.uploadPan = async (req, res) => {
+  try {
+    const phoneNumber = req.params.phoneNumber;
+    // Upload file to S3
+    const fileName = `pans/${phoneNumber}_${req.file.originalname}`;
+    const params = {
+      Bucket: process.env.PAN_BUCKET,
+      Key: fileName,
+      Body: req.file.buffer,
+    };
+    const s3UploadResponse = await s3.upload(params).promise();
+    const user = await UserModel.findOne({ phoneNumber: phoneNumber });
+    user.pan = s3UploadResponse.Location,
+
+    await user.save();
+    res.status(200).json({ message: 'Document uploaded successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+exports.uploadAadhar = async (req, res) => {
+  try {
+    const phoneNumber = req.params.phoneNumber;
+    // Upload file to S3
+    const fileName = `aadhars/${phoneNumber}_${req.file.originalname}`;
+    const params = {
+      Bucket: process.env.AADHAR_BUCKET,
+      Key: fileName,
+      Body: req.file.buffer,
+    };
+    const s3UploadResponse = await s3.upload(params).promise();
+    const user = await UserModel.findOne({ phoneNumber: phoneNumber });
+    user.aadhar = s3UploadResponse.Location,
+
+    await user.save();
+    res.status(200).json({ message: 'Document uploaded successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 };

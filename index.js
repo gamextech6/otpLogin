@@ -1,16 +1,12 @@
 const express = require('express');
 const app = express();
+const multer = require('multer');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv').config();
 const cors = require('cors');
 const mongoose = require('mongoose');
 const router = express.Router();
 const port = process.env.PORT || 3000;
-
-// Firebase and Twilio dependencies
-const admin = require('firebase-admin');
-
-
 // Models
 const UserModel = require('./models/userModel');
 
@@ -25,6 +21,7 @@ mongoose.connect(process.env.MONGOOSE_URI, { useNewUrlParser: true, useUnifiedTo
 app.get('/', (req, res) => {
   res.send('Phone OTP Authentication API');
 });
+
 
 // Routes
 const routes = require('./routes/route');
