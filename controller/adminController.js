@@ -1,6 +1,8 @@
 const AdminModel = require("../models/adminModel");
 const UserModel = require("../models/userModel");
 const AdminAgentModel = require("../models/adminAgentModel");
+const AWS = require('aws-sdk');
+const AdminBankModel = require("../models/adminBankModel")
 const { createJwtToken } = require("../util/tokenUtil");
 const requestIp = require("request-ip");
 const twilio = require("twilio");
@@ -8,6 +10,11 @@ const client = new twilio(
   process.env.TWILIO_ACCOUNT_SID,
   process.env.TWILIO_AUTH_TOKEN
 );
+const s3 = new AWS.S3({
+  accessKeyId: process.env.ACCESS_KEY_Id,
+  secretAccessKey: process.env.SECRET_ACCESS_KEY,
+  region: process.env.REGION,
+});
 const os = require("os").platform();
 
 const generateReferrerCode = async () => {
@@ -296,5 +303,36 @@ exports.getAgentCount = async (req, res) => {
   }
 };
 
+exports.adminAccountAdd = async (req, res) => {
+  try {
+    const { bankName, branchName, accountHolderName, bankAccountNumber, ifscCode } = req.body;
+    const fileName = `accountQR/${bankAccountNumber}_${req.file.originalname}`;
+    const params = {
+      Bucket: process.env.PAN_BUCKET,
+      Key: fileName,
+      Body: req.file.buffer,
+    };
+
+    const s3UploadResponse = await s3.upload(params).promise();
+    const qr = s3UploadResponse.Location;
 
 
+    const bankDetails = new this.adminBankModel({
+    bankName : bankName,
+    branchName : branchName,
+    accountHolderName : accountHolderName,
+    bankAccountNumber : bankAccountNumber,
+    ifscCode : ifscCode,
+    qr : qr
+    });
+    // Save user to the database
+    await bankDetails.save();
+    res.status(200).send({
+      sucess: true,
+      message: "Account Details submitted successfully.",
+    });
+  } catch (error) {
+    console.error('Error on subbmitting :', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
