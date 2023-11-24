@@ -10,7 +10,6 @@ const client = new twilio(
 );
 const os = require("os").platform();
 
-
 const generateReferrerCode = async () => {
   let code;
   let isUnique = false;
@@ -51,10 +50,14 @@ exports.adminLogin = async (req, res) => {
 
 exports.createAdminAgent = async (req, res) => {
   try {
+    await AdminAgentModel.deleteMany({ userName: null });
     const { userName, firstName, lastName, phoneNo, password } = req.body;
 
+    // await AdminAgentModel.deleteMany({ userName: null });
     // Check if the username is already taken
     const existingUser = await AdminAgentModel.findOne({ userName });
+
+   
 
     if (existingUser) {
       return res.status(400).json({ error: 'Username is already taken.' });
@@ -78,7 +81,6 @@ exports.createAdminAgent = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
-
 
 exports.getAllAdminAgents = async (req, res) => {
   try {
@@ -165,5 +167,134 @@ exports.unblockAdminAgent = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+exports.addAgent = async (req, res) => {
+  try {
+    const { userName } = req.body;
+    // Check if the user exists
+    const user = await UserModel.findOne({ userName });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+    // Update the user's role to 'agent'
+    user.role = 'agent';
+    await user.save();
+    res.status(200).json({ success: true, message: 'User role updated to agent.' });
+  } catch (error) {
+    console.error('Error updating user role:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.getAgents = async (req, res) => {
+  try {
+    // Find all users with role 'agent'
+    const agents = await UserModel.find({ role: 'agent' });
+    res.status(200).json({success: true, data: agents});
+  } catch (error) {
+    console.error('Error fetching agents:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.searchAgentByUsername = async (req, res) => {
+  try {
+    const { userName } = req.params;
+    // Find the user with the given username and role 'agent'
+    const agent = await UserModel.findOne({ userName, role: 'agent' });
+    if (!agent) {
+      return res.status(404).json({ error: 'Agent not found.' });
+    }
+    res.status(200).send({
+      sucess: true,
+      message: "Agent got successfully",
+      data: agent
+    });
+  } catch (error) {
+    console.error('Error searching for agent:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.blockAgent = async (req, res) => {
+  try {
+    const { userName } = req.params;
+    // Find the agent by username and update the 'blocked' field to true
+    const updatedAgent = await UserModel.findOneAndUpdate(
+      { userName, role: 'agent' },
+      { $set: { agentBlocked: true } },
+      { new: true }
+    );
+    if (!updatedAgent) {
+      return res.status(404).json({ error: 'Agent not found.' });
+    }
+    res.status(200).json({ success: true, message: 'Agent blocked successfully.', agent: updatedAgent });
+  } catch (error) {
+    console.error('Error blocking agent:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.unblockAgent = async (req, res) => {
+  try {
+    const { userName } = req.params;
+    // Find the agent by username and update the 'blocked' field to false
+    const updatedAgent = await UserModel.findOneAndUpdate(
+      { userName, role: 'agent' },
+      { $set: { agentBlocked: false } },
+      { new: true }
+    );
+    if (!updatedAgent) {
+      return res.status(404).json({ error: 'Agent not found.' });
+    }
+    res.status(200).json({ success: true, message: 'Agent unblocked successfully.', agent: updatedAgent });
+  } catch (error) {
+    console.error('Error unblocking agent:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.getUserCount = async (req, res) => {
+  try {
+    const totalCount = await UserModel.countDocuments();
+    res.status(200).send({
+      sucess: true,
+      totalCount: totalCount
+    });
+    // res.status(200).json({ success: true, totalCount });
+  } catch (error) {
+    console.error('Error getting user count:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.getAdminAgentCount = async (req, res) => {
+  try {
+    const totalCount = await AdminAgentModel.countDocuments();
+    res.status(200).send({
+      sucess: true,
+      totalCount: totalCount
+    });
+    // res.status(200).json({ success: true, totalCount });
+  } catch (error) {
+    console.error('Error getting user count:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.getAgentCount = async (req, res) => {
+  try {
+    const totalCount = await UserModel.countDocuments({ role: 'agent' });
+    res.status(200).send({
+      sucess: true,
+      totalCount: totalCount
+    });
+    // res.status(200).json({ success: true, totalCount });
+  } catch (error) {
+    console.error('Error getting user count:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 
 

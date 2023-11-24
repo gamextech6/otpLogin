@@ -41,6 +41,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   }, 
+  agentBlocked: {
+    type: Boolean,
+    default: false,
+  },
   bankName : String,
   branchName : String,
   accountHolderName: String, 
