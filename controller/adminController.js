@@ -308,7 +308,7 @@ exports.adminAccountAdd = async (req, res) => {
     const { bankName, branchName, accountHolderName, bankAccountNumber, ifscCode } = req.body;
     const fileName = `accountQR/${bankAccountNumber}_${req.file.originalname}`;
     const params = {
-      Bucket: process.env.PAN_BUCKET,
+      Bucket: process.env.QR_BUCKET,
       Key: fileName,
       Body: req.file.buffer,
     };
@@ -317,7 +317,7 @@ exports.adminAccountAdd = async (req, res) => {
     const qr = s3UploadResponse.Location;
 
 
-    const bankDetails = new this.adminBankModel({
+    const bankDetails = new AdminBankModel({
     bankName : bankName,
     branchName : branchName,
     accountHolderName : accountHolderName,
@@ -333,6 +333,26 @@ exports.adminAccountAdd = async (req, res) => {
     });
   } catch (error) {
     console.error('Error on subbmitting :', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+exports.adminAccountDelete = async (req, res) => {
+  try {
+    const { bankAccountNumber } = req.params;
+    await AdminBankModel.findOneAndRemove({ bankAccountNumber });
+    res.status(200).json({ success: true, message: 'Account Details Deleted Successfully.' });
+  } catch (error) {
+    console.error('Error Account Details submitting.:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.getAdminAccount = async (req, res) => {
+  try {
+    const allAccount = await AdminBankModel.find();
+    res.status(200).json({success: true, data: allAccount});
+  } catch (error) {
+    console.error('Error fetching accounts :', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };

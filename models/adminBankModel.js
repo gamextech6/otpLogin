@@ -12,6 +12,6 @@ const adminBankModelSchema = new mongoose.Schema({
   qr : String,
 });
 
-const adminBankModel = mongoose.model('adminBank', adminBankModelSchema);
+const AdminBankModel = mongoose.model('adminBank', adminBankModelSchema);
 
-module.exports = adminBankModel;
+module.exports = AdminBankModel;

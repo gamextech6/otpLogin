@@ -16,7 +16,9 @@ const {
     getUserCount, 
     getAdminAgentCount, 
     getAgentCount,
-    adminAccountAdd
+    adminAccountAdd,
+    adminAccountDelete,
+    getAdminAccount
 } = require("../controller/adminController");
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -34,5 +36,7 @@ router.put("/unblock-agent/:userName", unblockAgent);
 router.get("/total-user", getUserCount);
 router.get("/total-admin-agent", getAdminAgentCount);
 router.get("/total-agent", getAgentCount);
-router.get("/add-account", upload.single('qr'), adminAccountAdd);
+router.post("/add-account", upload.single('qr'), adminAccountAdd);
+router.post("/delete-account/:bankAccountNumber", adminAccountDelete);
+router.get("/get-account", getAdminAccount);
 module.exports = router;
