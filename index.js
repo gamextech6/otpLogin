@@ -35,7 +35,7 @@ const routes = require('./routes/route');
 const adminRoutes = require('./routes/adminRoute');
 app.use('/', routes);
 app.use('/admin/', adminRoutes);
-
+const PORT = 3000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
