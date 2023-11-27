@@ -23,7 +23,11 @@ const {
     } = require("../controller/controller");
 
 // Set up multer for handling file uploads
-const upload = multer({ storage: multer.memoryStorage() });
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage }).fields([
+    { name: 'pan', maxCount: 1 },
+    { name: 'aadhar', maxCount: 1 },
+  ]);
 
 router.post("/send-otp", sendOTP);
 router.post("/send-forgetotp", sendForgetOTP);
@@ -39,8 +43,8 @@ router.get("/user-balance/:phoneNumber", getUserBalance);
 router.get("/user-raferral/:phoneNumber", getUserReferralCode);
 router.get("/getalluser", getAllUsers);
 router.get("/search/:username", searchUserByUsername);
-router.post("/account-details/:phoneNumber", userAccountAdd);
-router.post("/upload-pan/:phoneNumber", upload.single('pan'), uploadPan);
-router.post("/upload-aadhar/:phoneNumber", upload.single('aadhar'), uploadAadhar);
+router.post("/account-details/:phoneNumber", upload, userAccountAdd);
+// router.post("/upload-pan/:phoneNumber", upload.single('pan'), uploadPan);
+// router.post("/upload-aadhar/:phoneNumber", upload.single('aadhar'), uploadAadhar);
 
 module.exports = router;

@@ -485,12 +485,31 @@ exports.userAccountAdd = async (req, res) => {
       return res.status(403).json({ error: 'User is blocked. Cannot able to upload bank details. Please connect to support team.' });
     }
 
+    const panName = `pans/${phoneNumber}`;
+    const aadharName = `aadhars/${phoneNumber}`;
+    const panParams = {
+      Bucket: process.env.PAN_BUCKET,
+      Key: panName,
+      Body: req.files['aadhar'][0].buffer,
+    };
+    const s3UploadPanResponse = await s3.upload(panParams).promise();
+    
+    const aadharParams = {
+      Bucket: process.env.AADHAR_BUCKET,
+      Key: aadharName,
+      Body: req.files['pan'][0].buffer,
+    };
+    const s3UploadAadharResponse = await s3.upload(aadharParams).promise();
+    
+
     const user = await UserModel.findOne({ phoneNumber: phoneNumber });
     user.bankName = bankName
     user.branchName = branchName
     user.accountHolderName = accountHolderName
     user.bankAccountNumber = bankAccountNumber
     user.ifscCode = ifscCode
+    user.pan = s3UploadPanResponse.Location
+    user.aadhar =  s3UploadAadharResponse.Location
     // Save user to the database
     await user.save();
     res.status(200).send({
@@ -503,46 +522,46 @@ exports.userAccountAdd = async (req, res) => {
   }
 };
 
-exports.uploadPan = async (req, res) => {
-  try {
-    const phoneNumber = req.params.phoneNumber;
-    // Upload file to S3
-    const fileName = `pans/${phoneNumber}_${req.file.originalname}`;
-    const params = {
-      Bucket: process.env.PAN_BUCKET,
-      Key: fileName,
-      Body: req.file.buffer,
-    };
-    const s3UploadResponse = await s3.upload(params).promise();
-    const user = await UserModel.findOne({ phoneNumber: phoneNumber });
-    user.pan = s3UploadResponse.Location,
+// exports.uploadPan = async (req, res) => {
+//   try {
+//     const phoneNumber = req.params.phoneNumber;
+//     // Upload file to S3
+//     const fileName = `pans/${phoneNumber}_${req.file.originalname}`;
+//     const params = {
+//       Bucket: process.env.PAN_BUCKET,
+//       Key: fileName,
+//       Body: req.file.buffer,
+//     };
+//     const s3UploadResponse = await s3.upload(params).promise();
+//     const user = await UserModel.findOne({ phoneNumber: phoneNumber });
+//     user.pan = s3UploadResponse.Location,
 
-    await user.save();
-    res.status(200).json({ message: 'Document uploaded successfully' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
-  }
-};
+//     await user.save();
+//     res.status(200).json({ message: 'Document uploaded successfully' });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Internal Server Error' });
+//   }
+// };
 
-exports.uploadAadhar = async (req, res) => {
-  try {
-    const phoneNumber = req.params.phoneNumber;
-    // Upload file to S3
-    const fileName = `aadhars/${phoneNumber}_${req.file.originalname}`;
-    const params = {
-      Bucket: process.env.AADHAR_BUCKET,
-      Key: fileName,
-      Body: req.file.buffer,
-    };
-    const s3UploadResponse = await s3.upload(params).promise();
-    const user = await UserModel.findOne({ phoneNumber: phoneNumber });
-    user.aadhar = s3UploadResponse.Location,
+// exports.uploadAadhar = async (req, res) => {
+//   try {
+//     const phoneNumber = req.params.phoneNumber;
+//     // Upload file to S3
+//     const fileName = `aadhars/${phoneNumber}_${req.file.originalname}`;
+//     const params = {
+//       Bucket: process.env.AADHAR_BUCKET,
+//       Key: fileName,
+//       Body: req.file.buffer,
+//     };
+//     const s3UploadResponse = await s3.upload(params).promise();
+//     const user = await UserModel.findOne({ phoneNumber: phoneNumber });
+//     user.aadhar = s3UploadResponse.Location,
 
-    await user.save();
-    res.status(200).json({ message: 'Document uploaded successfully' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
-  }
-};
+//     await user.save();
+//     res.status(200).json({ message: 'Document uploaded successfully' });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Internal Server Error' });
+//   }
+// };
