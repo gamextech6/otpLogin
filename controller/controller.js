@@ -522,46 +522,6 @@ exports.userAccountAdd = async (req, res) => {
   }
 };
 
-// exports.uploadPan = async (req, res) => {
-//   try {
-//     const phoneNumber = req.params.phoneNumber;
-//     // Upload file to S3
-//     const fileName = `pans/${phoneNumber}_${req.file.originalname}`;
-//     const params = {
-//       Bucket: process.env.PAN_BUCKET,
-//       Key: fileName,
-//       Body: req.file.buffer,
-//     };
-//     const s3UploadResponse = await s3.upload(params).promise();
-//     const user = await UserModel.findOne({ phoneNumber: phoneNumber });
-//     user.pan = s3UploadResponse.Location,
-
-//     await user.save();
-//     res.status(200).json({ message: 'Document uploaded successfully' });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Internal Server Error' });
-//   }
-// };
-
-// exports.uploadAadhar = async (req, res) => {
-//   try {
-//     const phoneNumber = req.params.phoneNumber;
-//     // Upload file to S3
-//     const fileName = `aadhars/${phoneNumber}_${req.file.originalname}`;
-//     const params = {
-//       Bucket: process.env.AADHAR_BUCKET,
-//       Key: fileName,
-//       Body: req.file.buffer,
-//     };
-//     const s3UploadResponse = await s3.upload(params).promise();
-//     const user = await UserModel.findOne({ phoneNumber: phoneNumber });
-//     user.aadhar = s3UploadResponse.Location,
-
-//     await user.save();
-//     res.status(200).json({ message: 'Document uploaded successfully' });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Internal Server Error' });
-//   }
-// };
+exports.addMoney = async (req, res) => {
+  
+}

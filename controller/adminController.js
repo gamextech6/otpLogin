@@ -330,6 +330,7 @@ exports.adminAccountAdd = async (req, res) => {
       accountHolderName,
       bankAccountNumber,
       ifscCode,
+      upiID
     } = req.body;
     const fileName = `accountQR/${bankAccountNumber}`;
     const params = {
@@ -348,6 +349,7 @@ exports.adminAccountAdd = async (req, res) => {
       bankAccountNumber: bankAccountNumber,
       ifscCode: ifscCode,
       qr: qr,
+      upiID: upiID
     });
     // Save user to the database
     await bankDetails.save();
@@ -435,6 +437,48 @@ exports.reduceBananceToUser = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching accounts :", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.activeAccount = async (req, res) => {
+  try {
+    const { bankAccountNumber } = req.params;
+    const updatedAccount = await AdminBankModel.findOneAndUpdate({ bankAccountNumber });
+    if (!updatedAccount) {
+      return res.status(404).json({ error: "Accouont not found." });
+    }
+    updatedAccount.active = true;
+    await updatedAccount.save();
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Account Activeted successfully."
+      });
+  } catch (error) {
+    console.error("Error blocking agent:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.deactiveAccount = async (req, res) => {
+  try {
+    const { bankAccountNumber } = req.params;
+    const updatedAccount = await AdminBankModel.findOneAndUpdate({ bankAccountNumber });
+    if (!updatedAccount) {
+      return res.status(404).json({ error: "Accouont not found." });
+    }
+    updatedAccount.active = false;
+    await updatedAccount.save();
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Account Deactiveted successfully."
+      });
+  } catch (error) {
+    console.error("Error blocking agent:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

@@ -10,6 +10,11 @@ const adminBankModelSchema = new mongoose.Schema({
   },
   ifscCode: String,
   qr : String,
+  upiID : String,
+  active: {
+    type: Boolean,
+    default: false,
+    },
 });
 
 const AdminBankModel = mongoose.model('adminBank', adminBankModelSchema);
