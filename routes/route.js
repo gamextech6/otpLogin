@@ -17,9 +17,7 @@ const {
     blockUser, 
     searchUserByUsername, 
     unblockUser,
-    userAccountAdd,
-    uploadPan,
-    uploadAadhar
+    userAccountAdd
     } = require("../controller/controller");
 
 // Set up multer for handling file uploads
@@ -44,6 +42,7 @@ router.get("/user-raferral/:phoneNumber", getUserReferralCode);
 router.get("/getalluser", getAllUsers);
 router.get("/search/:username", searchUserByUsername);
 router.post("/account-details/:phoneNumber", upload, userAccountAdd);
+
 // router.post("/upload-pan/:phoneNumber", upload.single('pan'), uploadPan);
 // router.post("/upload-aadhar/:phoneNumber", upload.single('aadhar'), uploadAadhar);
 

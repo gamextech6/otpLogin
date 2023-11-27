@@ -399,3 +399,42 @@ exports.getAdminAccount = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+exports.addBananceToUser = async (req, res) => {
+  try {
+    const { userName, balance } = req.body;
+    const user = await UserModel.findOne({ userName });
+    if(!user){
+      return res.status(201).json({ success: false, massage: "User Not Find. Please enter correct username."});
+    }
+    user.balance += balance;
+    await user.save();
+    res.status(200).send({
+      sucess: true,
+      message: "Amount Added successfully.",
+    });
+  } catch (error) {
+    console.error("Error fetching accounts :", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.reduceBananceToUser = async (req, res) => {
+  try {
+    
+    const { userName, balance} = req.body;
+    const user = await UserModel.findOne({ userName });
+    if(!user){
+      return res.status(201).json({ success: false, massage: "User Not Find. Please enter correct username."});
+    }
+    user.balance -= balance;
+    await user.save();
+    res.status(200).send({
+      sucess: true,
+      message: "Amount Reduced.",
+    });
+  } catch (error) {
+    console.error("Error fetching accounts :", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
