@@ -482,3 +482,14 @@ exports.deactiveAccount = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+exports.getAdminAccountDetail = async (req, res) => {
+  try {
+    const { bankAccountNumber } = req.params;
+    const accountDetails = await AdminBankModel.find({ bankAccountNumber });
+    res.status(200).json({ success: true, data: accountDetails });
+  } catch (error) {
+    console.error("Error In Fetching Account Detail :", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

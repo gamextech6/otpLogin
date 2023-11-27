@@ -22,7 +22,8 @@ const {
     addBananceToUser,
     reduceBananceToUser,
     activeAccount,
-    deactiveAccount
+    deactiveAccount,
+    getAdminAccountDetail
 } = require("../controller/adminController");
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -47,4 +48,5 @@ router.post("/add-amount", addBananceToUser);
 router.post("/reduce-amount", reduceBananceToUser);
 router.put("/active-account/:bankAccountNumber", activeAccount);
 router.put("/deactive-account/:bankAccountNumber", deactiveAccount);
+router.get("/account-details/:bankAccountNumber", getAdminAccountDetail);
 module.exports = router;
