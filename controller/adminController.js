@@ -255,6 +255,22 @@ exports.blockAgent = async (req, res) => {
   }
 };
 
+exports.deleteAdminAgent = async (req, res) => {
+  try {
+    const { userName } = req.params;
+    await AdminAgentModel.findOneAndRemove({ userName });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Admin Agent Deleted Successfully.",
+      });
+  } catch (error) {
+    console.error("Error blocking agent:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 exports.unblockAgent = async (req, res) => {
   try {
     const { userName } = req.params;
@@ -362,6 +378,7 @@ exports.adminAccountAdd = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 exports.adminAccountDelete = async (req, res) => {
   try {
     const { bankAccountNumber } = req.params;
@@ -479,6 +496,17 @@ exports.deactiveAccount = async (req, res) => {
       });
   } catch (error) {
     console.error("Error blocking agent:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.getAdminAccountDetail = async (req, res) => {
+  try {
+    const { bankAccountNumber } = req.params;
+    const accountDetails = await AdminBankModel.find({ bankAccountNumber });
+    res.status(200).json({ success: true, data: accountDetails });
+  } catch (error) {
+    console.error("Error In Fetching Account Detail :", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
