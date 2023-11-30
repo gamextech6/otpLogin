@@ -1,6 +1,7 @@
 const UserModel = require("../models/userModel");
 const AdminModel = require("../models/adminModel");
 const AdminBankModel = require("../models/adminBankModel");
+const UserTransactionsModel = require("../models/userTransactionsModel");
 const { createJwtToken } = require("../util/tokenUtil");
 const requestIp = require("request-ip");
 const twilio = require("twilio");
@@ -539,6 +540,17 @@ exports.bankInfoToAddMoney = async (req, res) => {
   try {
     const accountDetails = await AdminBankModel.find({ active : true });
     res.status(200).json({ success: true, data: accountDetails });
+  } catch (error) {
+    console.error("Error In Fetching Account Detail :", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.transactions = async (req, res) => {
+  try {
+    const { userName } = req.body;
+    const transactionDetails = await UserTransactionsModel.find({ userName });
+    res.status(200).json({ success: true, data: transactionDetails });
   } catch (error) {
     console.error("Error In Fetching Account Detail :", error);
     res.status(500).json({ error: "Internal server error" });

@@ -19,8 +19,8 @@ const {
     adminAccountAdd,
     adminAccountDelete,
     getAdminAccount,
-    addBananceToUser,
-    reduceBananceToUser,
+    addBalanceToUser,
+    reduceBalanceToUser,
     activeAccount,
     deactiveAccount,
     getAdminAccountDetail,
@@ -47,8 +47,8 @@ router.post("/add-account", upload.single('qr'), adminAccountAdd);
 // router.post("/add-account", adminAccountAdd);
 router.post("/delete-account/:bankAccountNumber", adminAccountDelete);
 router.get("/get-account", getAdminAccount);
-router.post("/add-amount", addBananceToUser);
-router.post("/reduce-amount", reduceBananceToUser);
+router.post("/add-amount", addBalanceToUser);
+router.post("/reduce-amount", reduceBalanceToUser);
 // router.put("/active-account/:bankAccountNumber", activeAccount);
 router.put("/active-account", activeAccount);
 // router.put("/deactive-account/:bankAccountNumber", deactiveAccount);

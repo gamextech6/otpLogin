@@ -18,7 +18,8 @@ const {
     searchUserByUsername, 
     unblockUser,
     userAccountAdd,
-    bankInfoToAddMoney
+    bankInfoToAddMoney,
+    transactions
     } = require("../controller/controller");
 
 // Set up multer for handling file uploads
@@ -44,7 +45,7 @@ router.get("/getalluser", getAllUsers);
 router.get("/search/:username", searchUserByUsername);
 router.post("/account-details/:phoneNumber", upload, userAccountAdd);
 router.get("/add-money",bankInfoToAddMoney);
-
+router.post("/transactions",transactions);
 // router.post("/upload-pan/:phoneNumber", upload.single('pan'), uploadPan);
 // router.post("/upload-aadhar/:phoneNumber", upload.single('aadhar'), uploadAadhar);
 

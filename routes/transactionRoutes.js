@@ -4,16 +4,26 @@ const {
     getDailyDepositTransactions, 
     getMonthlyDepositTransactions, 
     getYearlyDepositTransactions,
-    getDailyDepositTransactionsByBankAccountNumber
+    getDailyDepositTransactionsByBankAccountNumber,
+    addWithdrawlTransaction, 
+    getDailyWithdrawlTransactions, 
+    getMonthlyWithdrawlTransactions, 
+    getYearlyWithdrawlTransactions,
+    getDailyWithdrawlTransactionsByBankAccountNumber
  } = require('../controller/transactionController');
 
 const router = express.Router();
 
 // Use more specific paths to avoid conflicts
-router.post('/daily', addDepositTransaction);
-router.get('/daily', getDailyDepositTransactions);
-router.get('/dailyByBankAccount', getDailyDepositTransactionsByBankAccountNumber);
-router.get('/monthly/:month/:year', getMonthlyDepositTransactions);
-router.get('/yearly/:year', getYearlyDepositTransactions);
+router.post('/dailydeposit', addDepositTransaction);
+router.get('/dailydeposit', getDailyDepositTransactions);
+router.get('/dailydepositbybankaccount', getDailyDepositTransactionsByBankAccountNumber);
+router.get('/monthlydeposit', getMonthlyDepositTransactions);
+router.get('/yearlydeposit', getYearlyDepositTransactions);
+router.post('/dailywithdrawl', addWithdrawlTransaction);
+router.get('/dailywithdrawl', getDailyWithdrawlTransactions);
+router.get('/dailywithdrawlByBankAccount', getDailyWithdrawlTransactionsByBankAccountNumber);
+router.get('/monthlywithdrawl', getMonthlyWithdrawlTransactions);
+router.get('/yearlywithdrawl', getYearlyWithdrawlTransactions);
 
 module.exports = router;

@@ -59,7 +59,7 @@ exports.getDailyDepositTransactionsByBankAccountNumber = async (req, res) => {
 
 exports.getMonthlyDepositTransactions = async (req, res) => {
   try {
-    const { month, year } = req.params;
+    const { month, year } = req.body;
 
     const startOfMonth = new Date(`${year}-${month}-01`);
     const endOfMonth = new Date(`${year}-${parseInt(month) + 1}-01`);
@@ -79,7 +79,7 @@ exports.getMonthlyDepositTransactions = async (req, res) => {
 
 exports.getYearlyDepositTransactions = async (req, res) => {
   try {
-    const { year } = req.params;
+    const { year } = req.body;
 
     const startOfYear = new Date(`${year}-01-01`);
     const endOfYear = new Date(`${parseInt(year) + 1}-01-01`);
@@ -100,25 +100,25 @@ exports.getYearlyDepositTransactions = async (req, res) => {
 exports.addWithdrawlTransaction = async (req, res) => {
   try {
     const { amount, bankAccountNumber } = req.body;
-    const transaction = new DepositTransactionModel({
+    const transaction = new WithdrawlTransactionModel({
       amount,
       bankAccountNumber,
     });
     await transaction.save();
     return res
       .status(200)
-      .json({ success: true, message: "Transaction added successfully." });
+      .json({ success: true, message: "Transaction added successfully.",  });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-exports.getDailyDepositTransactions = async (req, res) => {
+exports.getDailyWithdrawlTransactions = async (req, res) => {
   try {
     const startOfDay = new Date().setHours(0, 0, 0, 0);
     const endOfDay = new Date().setHours(23, 59, 59, 999);
 
-    const dailyTransactions = await DepositTransactionModel.find({
+    const dailyTransactions = await WithdrawlTransactionModel.find({
       date: {
         $gte: startOfDay,
         $lte: endOfDay,
@@ -131,7 +131,7 @@ exports.getDailyDepositTransactions = async (req, res) => {
   }
 };
 
-exports.getDailyDepositTransactionsByBankAccountNumber = async (req, res) => {
+exports.getDailyWithdrawlTransactionsByBankAccountNumber = async (req, res) => {
   try {
     const { bankAccountNumber } = req.body;
 
@@ -139,7 +139,7 @@ exports.getDailyDepositTransactionsByBankAccountNumber = async (req, res) => {
     const startOfDay = new Date().setHours(0, 0, 0, 0);
     const endOfDay = new Date().setHours(23, 59, 59, 999);
 
-    const dailyTransactions = await DepositTransactionModel.find({
+    const dailyTransactions = await WithdrawlTransactionModel.find({
       date: {
         $gte: startOfDay,
         $lte: endOfDay,
@@ -153,14 +153,14 @@ exports.getDailyDepositTransactionsByBankAccountNumber = async (req, res) => {
   }
 };
 
-exports.getMonthlyDepositTransactions = async (req, res) => {
+exports.getMonthlyWithdrawlTransactions = async (req, res) => {
   try {
-    const { month, year } = req.params;
+    const { month, year } = req.body;
 
     const startOfMonth = new Date(`${year}-${month}-01`);
     const endOfMonth = new Date(`${year}-${parseInt(month) + 1}-01`);
 
-    const monthlyTransactions = await DepositTransactionModel.find({
+    const monthlyTransactions = await WithdrawlTransactionModel.find({
       date: {
         $gte: startOfMonth,
         $lt: endOfMonth,
@@ -173,9 +173,9 @@ exports.getMonthlyDepositTransactions = async (req, res) => {
   }
 };
 
-exports.getYearlyDepositTransactions = async (req, res) => {
+exports.getYearlyWithdrawlTransactions = async (req, res) => {
   try {
-    const { year } = req.params;
+    const { year } = req.body;
 
     const startOfYear = new Date(`${year}-01-01`);
     const endOfYear = new Date(`${parseInt(year) + 1}-01-01`);

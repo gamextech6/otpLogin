@@ -1,6 +1,7 @@
 const AdminModel = require("../models/adminModel");
 const UserModel = require("../models/userModel");
 const AdminAgentModel = require("../models/adminAgentModel");
+const UserTransactionsModel = require("../models/userTransactionsModel");
 const AWS = require("aws-sdk");
 const { Storage } = require('@google-cloud/storage');
 const storage = new Storage();
@@ -421,7 +422,7 @@ exports.getAdminAccount = async (req, res) => {
   }
 };
 
-exports.addBananceToUser = async (req, res) => {
+exports.addBalanceToUser = async (req, res) => {
   try {
     const { userName, balance } = req.body;
     const user = await UserModel.findOne({ userName });
@@ -430,6 +431,15 @@ exports.addBananceToUser = async (req, res) => {
     }
     user.balance += balance;
     await user.save();
+    const transaction = new UserTransactionsModel({
+      userName : user.userName,
+      phoneNumber: user.phoneNumber,
+      balance: user.balance,
+      amount: balance,
+      deposit: true,
+      withdrawl: false
+    })
+    await transaction.save();
     res.status(200).send({
       sucess: true,
       message: "Amount Added successfully.",
@@ -440,7 +450,7 @@ exports.addBananceToUser = async (req, res) => {
   }
 };
 
-exports.reduceBananceToUser = async (req, res) => {
+exports.reduceBalanceToUser = async (req, res) => {
   try {
     
     const { userName, balance} = req.body;
@@ -450,6 +460,15 @@ exports.reduceBananceToUser = async (req, res) => {
     }
     user.balance -= balance;
     await user.save();
+    const transaction = new UserTransactionsModel({
+      userName : user.userName,
+      phoneNumber: user.phoneNumber,
+      balance: user.balance,
+      amount: balance,
+      deposit: false,
+      withdrawl: true
+    })
+    await transaction.save();
     res.status(200).send({
       sucess: true,
       message: "Amount Reduced.",
