@@ -2,6 +2,8 @@ const AdminModel = require("../models/adminModel");
 const UserModel = require("../models/userModel");
 const AdminAgentModel = require("../models/adminAgentModel");
 const AWS = require("aws-sdk");
+const { Storage } = require('@google-cloud/storage');
+const storage = new Storage();
 const AdminBankModel = require("../models/adminBankModel");
 const { createJwtToken } = require("../util/tokenUtil");
 const requestIp = require("request-ip");
@@ -460,7 +462,7 @@ exports.reduceBananceToUser = async (req, res) => {
 
 exports.activeAccount = async (req, res) => {
   try {
-    const { bankAccountNumber } = req.params;
+    const { bankAccountNumber } = req.body;
     const updatedAccount = await AdminBankModel.findOneAndUpdate({ bankAccountNumber });
     if (!updatedAccount) {
       return res.status(404).json({ error: "Accouont not found." });
@@ -481,7 +483,7 @@ exports.activeAccount = async (req, res) => {
 
 exports.deactiveAccount = async (req, res) => {
   try {
-    const { bankAccountNumber } = req.params;
+    const { bankAccountNumber } = req.body;
     const updatedAccount = await AdminBankModel.findOneAndUpdate({ bankAccountNumber });
     if (!updatedAccount) {
       return res.status(404).json({ error: "Accouont not found." });

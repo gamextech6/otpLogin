@@ -33,8 +33,10 @@ app.get('/', (req, res) => {
 // Routes
 const routes = require('./routes/route');
 const adminRoutes = require('./routes/adminRoute');
+const transactionRoutes = require('./routes/transactionRoutes');
 app.use('/', routes);
 app.use('/admin/', adminRoutes);
+app.use('/transactions', transactionRoutes);
 const PORT = 3000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
