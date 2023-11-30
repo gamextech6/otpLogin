@@ -1,4 +1,4 @@
-const DepositTransactionModel = require("../models/depositTransactionModel");
+const DepositTransactionModel = require("../models/DepositTransactionModel");
 const WithdrawlTransactionModel = require("../models/WithdrawlTransactionModel");
 
 exports.addDepositTransaction = async (req, res) => {
