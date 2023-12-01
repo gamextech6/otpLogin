@@ -27,7 +27,7 @@ router.post('/getmonthlydepositbybankaccount', getMonthlyDepositTransactionsByBa
 router.post('/getyearlydeposit', getYearlyDepositTransactions);
 router.post('/getyearlydepositbybankaccount', getYearlyDepositTransactionsByBankAccountNumber);
 router.post('/postdailywithdrawl', addWithdrawlTransaction);
-router.post('/postgetdailywithdrawl', getDailyWithdrawlTransactions);
+router.post('/getdailywithdrawl', getDailyWithdrawlTransactions);
 router.post('/getdailywithdrawlbybankaccount', getDailyWithdrawlTransactionsByBankAccountNumber);
 router.post('/getmonthlywithdrawl', getMonthlyWithdrawlTransactions);
 router.post('/getmonthlywithdrawlbybankaccount',  getMonthlyWithdrawlTransactionsByBankAccountNumber);
