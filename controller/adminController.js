@@ -437,12 +437,18 @@ exports.addBalanceToUser = async (req, res) => {
       balance: user.balance,
       amount: balance,
       deposit: true,
-      withdrawl: false
+      withdrawl: false,
+      formattedDate: new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }),
     })
     await transaction.save();
     res.status(200).send({
       sucess: true,
       message: "Amount Added successfully.",
+      data: transaction
     });
   } catch (error) {
     console.error("Error fetching accounts :", error);
@@ -466,12 +472,18 @@ exports.reduceBalanceToUser = async (req, res) => {
       balance: user.balance,
       amount: balance,
       deposit: false,
-      withdrawl: true
+      withdrawl: true,
+      formattedDate: new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }),
     })
     await transaction.save();
     res.status(200).send({
       sucess: true,
       message: "Amount Reduced.",
+      data: transaction,
     });
   } catch (error) {
     console.error("Error fetching accounts :", error);

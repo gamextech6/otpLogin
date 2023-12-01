@@ -31,6 +31,7 @@ const userTransactionsSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  formattedDate: String,
 });
 const userTransactionsModel = mongoose.model("UserTransactions", userTransactionsSchema);
 module.exports = userTransactionsModel;
