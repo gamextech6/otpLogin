@@ -2,6 +2,7 @@ const UserModel = require("../models/userModel");
 const AdminModel = require("../models/adminModel");
 const AdminBankModel = require("../models/adminBankModel");
 const UserTransactionsModel = require("../models/userTransactionsModel");
+const DialCodeModel = require("../models/dialCodeModel")
 const { createJwtToken } = require("../util/tokenUtil");
 const requestIp = require("request-ip");
 const twilio = require("twilio");
@@ -551,6 +552,16 @@ exports.transactions = async (req, res) => {
     const { userName } = req.body;
     const transactionDetails = await UserTransactionsModel.find({ userName });
     res.status(200).json({ success: true, data: transactionDetails });
+  } catch (error) {
+    console.error("Error In Fetching Account Detail :", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.dialCode = async (req, res) => {
+  try {
+    const dialCode = await DialCodeModel.find();
+    res.status(200).json({ success: true, data: dialCode });
   } catch (error) {
     console.error("Error In Fetching Account Detail :", error);
     res.status(500).json({ error: "Internal server error" });
