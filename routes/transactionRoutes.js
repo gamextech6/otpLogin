@@ -9,21 +9,29 @@ const {
     getDailyWithdrawlTransactions, 
     getMonthlyWithdrawlTransactions, 
     getYearlyWithdrawlTransactions,
-    getDailyWithdrawlTransactionsByBankAccountNumber
+    getDailyWithdrawlTransactionsByBankAccountNumber,
+    getMonthlyDepositTransactionsByBankAccountNumber,
+    getYearlyDepositTransactionsByBankAccountNumber,
+    getMonthlyWithdrawlTransactionsByBankAccountNumber,
+    getYearlyWithdrawlTransactionsByBankAccountNumber
  } = require('../controller/transactionController');
 
 const router = express.Router();
 
 // Use more specific paths to avoid conflicts
-router.post('/dailydeposit', addDepositTransaction);
-router.get('/dailydeposit', getDailyDepositTransactions);
-router.get('/dailydepositbybankaccount', getDailyDepositTransactionsByBankAccountNumber);
-router.get('/monthlydeposit', getMonthlyDepositTransactions);
-router.get('/yearlydeposit', getYearlyDepositTransactions);
-router.post('/dailywithdrawl', addWithdrawlTransaction);
-router.get('/dailywithdrawl', getDailyWithdrawlTransactions);
-router.get('/dailywithdrawlByBankAccount', getDailyWithdrawlTransactionsByBankAccountNumber);
-router.get('/monthlywithdrawl', getMonthlyWithdrawlTransactions);
-router.get('/yearlywithdrawl', getYearlyWithdrawlTransactions);
+router.post('/postdailydeposit', addDepositTransaction);
+router.post('/getdailydeposit', getDailyDepositTransactions);
+router.post('/getdailydepositbybankaccount', getDailyDepositTransactionsByBankAccountNumber);
+router.post('/getmonthlydeposit', getMonthlyDepositTransactions);
+router.post('/getmonthlydepositbybankaccount', getMonthlyDepositTransactionsByBankAccountNumber);
+router.post('/getyearlydeposit', getYearlyDepositTransactions);
+router.post('/getyearlydepositbybankaccount', getYearlyDepositTransactionsByBankAccountNumber);
+router.post('/postdailywithdrawl', addWithdrawlTransaction);
+router.post('/postgetdailywithdrawl', getDailyWithdrawlTransactions);
+router.post('/getdailywithdrawlbybankaccount', getDailyWithdrawlTransactionsByBankAccountNumber);
+router.post('/getmonthlywithdrawl', getMonthlyWithdrawlTransactions);
+router.post('/getmonthlywithdrawlbybankaccount',  getMonthlyWithdrawlTransactionsByBankAccountNumber);
+router.post('/getyearlywithdrawl', getYearlyWithdrawlTransactions);
+router.post('/getyearlywithdrawlbybankaccount', getYearlyWithdrawlTransactionsByBankAccountNumber);
 
 module.exports = router;

@@ -91,7 +91,7 @@ exports.sendForgetOTP = async (req, res) => {
   const user = await UserModel.findOne({ phoneNumber: phoneNumber });
   // Send OTP via SMS (use your SMS service integration here)
   if (!user) {
-    return res.status(200).send({
+    return res.status(210).send({
       sucess: true,
       message: "User Not Found",
     });
